@@ -87,7 +87,7 @@ class FlutterWallet {
       await _channel.invokeMethod('getStableHardwareId');
 
   static Future<List<AddedCard>> getAddedCards() async {
-    final List<Map<String, dynamic>>? addedCards =
+    final List<Map<Object?, Object?>>? addedCards =
         await _channel.invokeListMethod('getAddedCards');
     return addedCards?.map((e) => AddedCard.fromJson(e)).toList() ?? [];
   }
