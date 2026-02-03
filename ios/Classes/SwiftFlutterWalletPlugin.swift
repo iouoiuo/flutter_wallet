@@ -176,7 +176,8 @@ public class SwiftFlutterWalletPlugin: NSObject, FlutterPlugin, PKAddPaymentPass
               return dict
           }
           
-          result(res.append(contentsOf: res1))
+          res.append(contentsOf: res1)
+          result(res)
       }
           
       return result(FlutterMethodNotImplemented)
