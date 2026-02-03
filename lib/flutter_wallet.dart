@@ -189,11 +189,11 @@ class GoogleUserAddress {
 enum PaymentNetwork { amex, visa, masterCard, JCB, discover, electron, maestro }
 
 class AddedCard {
-  final String fpanLastFour, issuerName, network,primaryAccountIdentifier,deviceAccountIdentifier;
+  final String fpanLastFour, issuerName, network,primaryAccountIdentifier,remote,deviceAccountIdentifier;
   final bool isDefault;
 
   const AddedCard(
-     this.primaryAccountIdentifier,this.deviceAccountIdentifier,this.fpanLastFour, this.issuerName, this.network, this.isDefault);
+     this.primaryAccountIdentifier,this.deviceAccountIdentifier,this.fpanLastFour, this.issuerName, this.network,this.remote, this.isDefault);
 
   factory AddedCard.fromJson(Map<dynamic, dynamic> json) => AddedCard(
       json["primaryAccountIdentifier"],
@@ -201,5 +201,6 @@ class AddedCard {
       json["fpanLastFour"],
       json["issuerName"],
       json["network"],
+      json["remote"],
       json["isDefault"]);
 }
