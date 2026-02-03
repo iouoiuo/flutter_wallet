@@ -87,7 +87,7 @@ class FlutterWallet {
       await _channel.invokeMethod('getStableHardwareId');
 
   static Future<List<AddedCard>> getAddedCards() async {
-    final List<Map<String, dynamic>>? addedCards =
+    final List<Map<Object?, Object?>>? addedCards =
         await _channel.invokeListMethod('getAddedCards');
     return addedCards?.map((e) => AddedCard.fromJson(e)).toList() ?? [];
   }
@@ -101,12 +101,12 @@ class FlutterWallet {
   void _initMethodCallHandler() => _channel.setMethodCallHandler(_handleCalls);
 
   Future<dynamic> _handleCalls(MethodCall call) async {
-    print(
-        'flutter wallet 000: method: ${call.method} arguments:${call.arguments}');
+    // print(
+    //     'flutter wallet 000: method: ${call.method} arguments:${call.arguments}');
     if (call.method == "onApplePayDataReceived" && call.arguments is Map) {
-      print('flutter wallet 111');
+      // print('flutter wallet 111');
       if (_applePayOnDataHandler != null) {
-        print('flutter wallet 222');
+        // print('flutter wallet 222');
         final List<String> certs =
             (call.arguments["certificatesBase64"] as List<dynamic>)
                 .map((e) => e.toString())
@@ -114,7 +114,7 @@ class FlutterWallet {
         final String nonce = call.arguments["nonceBase64"].toString();
         final String nonceSignature =
             call.arguments["nonceSignatureBase64"].toString();
-        print('flutter wallet 333');
+        // print('flutter wallet 333');
         try {
           final req =
               await _applePayOnDataHandler!(certs, nonce, nonceSignature);
@@ -123,14 +123,16 @@ class FlutterWallet {
             "activationData": req.activationData,
             "ephemeralPublicKey": req.ephemeralPublicKey
           };
-          print('flutter wallet 444');
+          // print('flutter wallet 444');
         } catch (e) {
-          print('flutter wallet 555');
+          // print('flutter wallet 555');
           return FlutterError(
               "Failed while obtaining data from the third-party server: $e");
         }
       }
-    } else if (call.method == "onApplePayFinished") {}
+    } else if (call.method == "onApplePayFinished") {
+      // print('flutter wallet 666');
+    }
 
     var handler = _handlers[call.arguments['key']];
     return handler != null ? await handler(call) : null;
@@ -187,15 +189,18 @@ class GoogleUserAddress {
 enum PaymentNetwork { amex, visa, masterCard, JCB, discover, electron, maestro }
 
 class AddedCard {
-  final String fpanLastFour, issuerName, network;
+  final String fpanLastFour, issuerName, network,primaryAccountIdentifier,remote,deviceAccountIdentifier;
   final bool isDefault;
 
   const AddedCard(
-      this.fpanLastFour, this.issuerName, this.network, this.isDefault);
+     this.primaryAccountIdentifier,this.deviceAccountIdentifier,this.fpanLastFour, this.issuerName, this.network,this.remote, this.isDefault);
 
   factory AddedCard.fromJson(Map<dynamic, dynamic> json) => AddedCard(
+      json["primaryAccountIdentifier"],
+      json["deviceAccountIdentifier"],
       json["fpanLastFour"],
       json["issuerName"],
       json["network"],
+      json["remote"],
       json["isDefault"]);
 }
