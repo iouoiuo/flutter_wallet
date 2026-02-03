@@ -134,9 +134,10 @@ public class SwiftFlutterWalletPlugin: NSObject, FlutterPlugin, PKAddPaymentPass
           return
       } else if (call.method == "getAddedCards") {
           let passes = pkPassLibrary.passes(of: PKPassType.secureElement)
+          let remotePasses = pkPassLibrary.remoteSecureElementPasses
 //          NSLog("Passes queried, found " + String(passes.count) + " passes.")
           
-          let res: [[String: Any]] = passes.filter({ pass in pass.secureElementPass != nil }).map { pass -> [String: Any] in
+          var res: [[String: Any]] = passes.filter({ pass in pass.secureElementPass != nil }).map { pass -> [String: Any] in
               let dict: [String: Any] = [
                 "fpanLastFour": pass.secureElementPass!.primaryAccountNumberSuffix,
                 "primaryAccountIdentifier": pass.secureElementPass!.primaryAccountIdentifier,
@@ -145,16 +146,37 @@ public class SwiftFlutterWalletPlugin: NSObject, FlutterPlugin, PKAddPaymentPass
                 "deviceAccountNumberSuffix": pass.secureElementPass!.deviceAccountNumberSuffix,
                 "issuerName": pass.organizationName,
                 "network": "",
+                "remote": "0",
                 "isDefault": false
               ]
-//              NSLog("primaryAccountIdentifier:"+pass.secureElementPass!.primaryAccountIdentifier)
+              NSLog("primaryAccountIdentifier0:"+pass.secureElementPass!.primaryAccountIdentifier)
 //              NSLog("primaryAccountNumberSuffix:"+pass.secureElementPass!.primaryAccountNumberSuffix)
 //              NSLog("deviceAccountIdentifier:"+pass.secureElementPass!.deviceAccountIdentifier)
 //              NSLog("deviceAccountNumberSuffix:"+pass.secureElementPass!.deviceAccountNumberSuffix)
               return dict
           }
           
-          result(res)
+          
+          var res1: [[String: Any]] = remotePasses.filter({ pass in pass.secureElementPass != nil }).map { pass -> [String: Any] in
+              let dict: [String: Any] = [
+                "fpanLastFour": pass.secureElementPass!.primaryAccountNumberSuffix,
+                "primaryAccountIdentifier": pass.secureElementPass!.primaryAccountIdentifier,
+                "primaryAccountNumberSuffix": pass.secureElementPass!.primaryAccountNumberSuffix,
+                "deviceAccountIdentifier": pass.secureElementPass!.deviceAccountIdentifier,
+                "deviceAccountNumberSuffix": pass.secureElementPass!.deviceAccountNumberSuffix,
+                "issuerName": pass.organizationName,
+                "network": "",
+                "remote": "1",
+                "isDefault": false
+              ]
+              NSLog("primaryAccountIdentifier1:"+pass.secureElementPass!.primaryAccountIdentifier)
+//              NSLog("primaryAccountNumberSuffix:"+pass.secureElementPass!.primaryAccountNumberSuffix)
+//              NSLog("deviceAccountIdentifier:"+pass.secureElementPass!.deviceAccountIdentifier)
+//              NSLog("deviceAccountNumberSuffix:"+pass.secureElementPass!.deviceAccountNumberSuffix)
+              return dict
+          }
+          
+          result(res.append(contentsOf: res1))
       }
           
       return result(FlutterMethodNotImplemented)
