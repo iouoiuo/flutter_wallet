@@ -23,6 +23,13 @@ class FlutterWallet {
     return false;
   }
 
+  static Future<bool> hasWatch() async {
+    if (Platform.isIOS)
+      return (await _channel.invokeMethod('hasWatch')) == true;
+    return false;
+  }
+
+
   // For Android only. Adds a card to Google Pay.
   static Future<void> initiateGooglePayCardFlow(
       {required String displayName,
