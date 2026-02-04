@@ -1,6 +1,7 @@
 import Flutter
 import UIKit
 import PassKit
+import WatchConnectivity
 
 extension UIApplication {
 
@@ -108,7 +109,18 @@ public class SwiftFlutterWalletPlugin: NSObject, FlutterPlugin, PKAddPaymentPass
     instance.channel = channel
     registrar.addMethodCallDelegate(instance, channel: channel)
   }
+    
 
+  func isWatchReallyConnected() -> Bool {
+        if WCSession.isSupported() {
+            let session = WCSession.default
+            // paired: 是否已配对
+            // isWatchAppInstalled: 是否安装了关联 App (可选)
+            return session.isPaired
+        }
+        return false
+    }
+    
   public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
       if (call.method == "canAddPaymentPass") {
           return result(PKAddPaymentPassViewController.canAddPaymentPass())
@@ -132,7 +144,16 @@ public class SwiftFlutterWalletPlugin: NSObject, FlutterPlugin, PKAddPaymentPass
           }
           
           return
-      } else if (call.method == "getAddedCards") {
+      } else if (call.method == "hasWatch") {
+          // 针对远程设备（Watch）的具体检查：
+          NSLog("remotePaymentPasses:"+pkPassLibrary.remotePaymentPasses().count.description)
+          NSLog("isWatchReallyConnected:"+isWatchReallyConnected().description)
+          NSLog("isPaymentPassActivationAvailable:"+pkPassLibrary.isPaymentPassActivationAvailable().description)
+          
+          
+          let canAddOnWatch = pkPassLibrary.remotePaymentPasses().count > 0 || isWatchReallyConnected()
+          return result(canAddOnWatch)
+      }else if (call.method == "getAddedCards") {
           let passes = pkPassLibrary.passes(of: PKPassType.secureElement)
           let remotePasses = pkPassLibrary.remoteSecureElementPasses
 //          NSLog("Passes queried, found " + String(passes.count) + " passes.")
