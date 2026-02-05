@@ -18,7 +18,7 @@ rootProject.allprojects {
         jcenter()
 
         flatDir {
-            dirs 'tapandpaysdk'
+            dirs project(':flutter_wallet').file('tapandpaysdk')
         }
 
         mavenLocal()
